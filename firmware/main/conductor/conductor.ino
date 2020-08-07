@@ -62,7 +62,7 @@ void setup() {
 
   playbackTimer.begin(playbackISR, BPM2USPERIOD(DEF_BPM));
   
-  restore_settings();
+  //restore_settings();
   
   DEBUG_PORT.print("Started with settings: running: ");
   DEBUG_PORT.print(playbackRunning);
@@ -80,7 +80,7 @@ void loop() {
     sw_reset(); // handle system timer overflows the easy way
   }
 
-  if(!playbackRunning){
+  /***if(!playbackRunning){
     static uint32_t toggle = 0;
     if(now >= toggle){
       toggle += (PAUSED_BLINK_PERIOD_MS/2);
@@ -89,12 +89,12 @@ void loop() {
       DEBUG_PORT.print("paused. time (ms): ");
       DEBUG_PORT.println(millis());
     }
-  }
+  }***/
 
-  if(playbackRunning){
+  /***if(playbackRunning){
     if(now >= rest){
       pause();
-    } 
+    } ***/
   
     if(playNext){
       playNext = false;   
@@ -103,5 +103,5 @@ void loop() {
         playbackColumn = 0;
       }
     }
-  }
+  
 }
