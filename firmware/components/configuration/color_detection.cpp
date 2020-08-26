@@ -176,6 +176,9 @@ bool colorIndexByRGB(const rgb_f_t* rgb, size_t* idx, const color_definition_t* 
     color_definition_t def = *(colors + color);
 
     if(mag < def.min_mag){ continue; }
+    if(mag > def.max_mag){ continue; }
+    if(hsv.h > def.max_hue){ continue; }
+    if(hsv.h < def.min_hue){ continue; }
 
     double dh = abs(hsv.h - def.hue);
     if(dh > 180.0f){
