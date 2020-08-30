@@ -41,8 +41,8 @@ Staff <staff_data_t> staff;
 #define PLAYPAUSE_PIN (8)
 
 IntervalTimer playbackTimer;
-volatile bool playNext = false;
-volatile bool playbackRunning = true;
+volatile bool playNext = true;
+volatile bool playbackRunning = false;
 volatile uint8_t playbackColumn = 0;
 
 uint32_t rest = (REST_INACTIVE_SEC * 1000);
@@ -52,7 +52,7 @@ void setup() {
   DEBUG_PORT.begin(DEBUG_BAUD);
 
   BRIDGE_PORT.begin(BRIDGE_BAUD);
-  cartBridge.onReceive(onCartReception, NULL);
+//  cartBridge.onReceive(onCartReception, NULL);
 
   staff.setSize(STAFF_COLS, STAFF_ROWS);
 
@@ -74,11 +74,11 @@ void setup() {
 void loop() {
   static uint32_t prev_time = 0;
   uint32_t now = millis();
-  cartBridge.check();
+  //cartBridge.check();
 
-  if(prev_time > now){
-    sw_reset(); // handle system timer overflows the easy way
-  }
+  //if(prev_time > now){
+  //  sw_reset(); // handle system timer overflows the easy way
+  //}
 
   if(!playbackRunning){
     static uint32_t toggle = 0;
@@ -93,7 +93,7 @@ void loop() {
 
   if(playbackRunning){
     if(now >= rest){
-      pause();
+      //pause();
     } 
   
     if(playNext){

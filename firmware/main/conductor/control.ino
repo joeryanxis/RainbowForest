@@ -58,44 +58,52 @@ void restore_settings( void ){
   }
 }
 
-void onCartReception(cart_t* cart, void* args){
-  staff_data_t prev = staff[cart->col][cart->row];
-  if(prev != cart->val){
-    staff[cart->col][cart->row] = cart->val;
-    rest = millis() + (REST_INACTIVE_SEC * 1000);
+void clearingStaff(){
+  for(uint8_t i = 0; i < STAFF_COLS; i++){
+    for(uint8_t j = 0; j < STAFF_ROWS; j++){
+      staff[i][j] = 0;
+    }
   }
 }
 
-void setColumnHSV( CHSV hsv, staff_data_t col){
-  CRGB rgb;
-  hsv2rgb_rainbow( hsv, rgb);
-  
-  setColumnRGB(rgb, col);
-}
+//void onCartReception(cart_t* cart, void* args){
+//  staff_data_t prev = staff[cart->col][cart->row];
+//  if(prev != cart->val){
+//    staff[cart->col][cart->row] = cart->val;
+//    rest = millis() + (REST_INACTIVE_SEC * 1000);
+//  }
+//}
 
-void setColumnRGB( CRGB rgb, staff_data_t col){ 
-  cat.col = col;
-  cat.row = COMMAND_SET_COLUMN_COLOR;
-  cat.rH = (rgb.r >> 4);
-  cat.rL = (rgb.r & 0x0F);
-  cat.gH = (rgb.g >> 4);
-  cat.gL = (rgb.g & 0x0F);
-  cat.bH = (rgb.b >> 4);
-  cat.bL = (rgb.b & 0x0F);
-  catBridge.send(&cat);
-}
+//void setColumnHSV( CHSV hsv, staff_data_t col){
+//  CRGB rgb;
+//  hsv2rgb_rainbow( hsv, rgb);
+//  
+//  setColumnRGB(rgb, col);
+//}
 
-void setNodeRGB( CRGB rgb, staff_data_t row, staff_data_t col ){
-  cat.col = col;
-  cat.row = row;
-  cat.rH = (rgb.r >> 4);
-  cat.rL = (rgb.r & 0x0F);
-  cat.gH = (rgb.g >> 4);
-  cat.gL = (rgb.g & 0x0F);
-  cat.bH = (rgb.b >> 4);
-  cat.bL = (rgb.b & 0x0F);
-  catBridge.send(&cat);
-}
+//void setColumnRGB( CRGB rgb, staff_data_t col){ 
+//  cat.col = col;
+//  cat.row = COMMAND_SET_COLUMN_COLOR;
+//  cat.rH = (rgb.r >> 4);
+//  cat.rL = (rgb.r & 0x0F);
+//  cat.gH = (rgb.g >> 4);
+//  cat.gL = (rgb.g & 0x0F);
+//  cat.bH = (rgb.b >> 4);
+//  cat.bL = (rgb.b & 0x0F);
+//  catBridge.send(&cat);
+//}
+//
+//void setNodeRGB( CRGB rgb, staff_data_t row, staff_data_t col ){
+//  cat.col = col;
+//  cat.row = row;
+//  cat.rH = (rgb.r >> 4);
+//  cat.rL = (rgb.r & 0x0F);
+//  cat.gH = (rgb.g >> 4);
+//  cat.gL = (rgb.g & 0x0F);
+//  cat.bH = (rgb.b >> 4);
+//  cat.bL = (rgb.b & 0x0F);
+//  catBridge.send(&cat);
+//}
 
 void requestFullUpdate( void ){
   cat.row = COMMAND_REQ_FULL_UPDATE;

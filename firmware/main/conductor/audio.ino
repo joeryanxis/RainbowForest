@@ -15,7 +15,7 @@
 #include <SD.h>
 #include <SerialFlash.h>
 
-#define NOTE_PLAYERS (STAFF_ROWS + 1) // demoinstrating up to 8 notes
+#define NOTE_PLAYERS (STAFF_ROWS + 1) // demonstrating up to 8 notes
 #define PLAYER_MIXERS (2)
 AudioPlaySdWav  notePlayersAlpha[NOTE_PLAYERS];
 AudioPlaySdWav  notePlayersBeta[NOTE_PLAYERS];
@@ -93,11 +93,11 @@ AudioConnection stage3CordRight(postMixerRight, 0, i2s1, 1);
 
 #define NUM_SOUNDS (STAFF_VALS * STAFF_ROWS)
 const char* sounds[NUM_SOUNDS] = {
-  "gC.wav", "gD.wav", "gE.wav", "gF.wav", "gG.wav", "gA.wav", "gB.wav",
-  "tC.wav", "tD.wav", "tE.wav", "tF.wav", "tG.wav", "tA.wav", "tB.wav",
-  "fC.wav", "fD.wav", "fE.wav", "fF.wav", "fG.wav", "fA.wav", "fB.wav",
+  "gC.wav", "gD.wav", "gE.wav", "gF.wav", "gG.wav", "gA2.wav", "gB2.wav",
+  "tC.wav", "tD.wav", "tE.wav", "tF.wav", "tG.wav", "tA2.wav", "tB2.wav",
+  "fC.wav", "fD.wav", "fE.wav", "fF.wav", "fG.wav", "fA2.wav", "fB2.wav",
   "dC.wav", "dD.wav", "dE.wav", "dF.wav", "dG.wav", "dA.wav", "dB.wav",
-  "gC.wav", "gD.wav", "gE.wav", "gF.wav", "gG.wav", "gA.wav", "gB.wav",
+  "gC.wav", "gD.wav", "gE.wav", "gF.wav", "gG.wav", "gA2.wav", "gB2.wav",
 };
 #define SOUND(I, N) sounds[(STAFF_ROWS * (I - INSTRUMENT_GUITAR)) + N]
 
@@ -105,7 +105,7 @@ void audio_setup( void ){
   AudioMemory(64);
   
   sgtl5000_1.enable();
-  sgtl5000_1.volume(0.20);
+  sgtl5000_1.volume(0.80);
   SPI.setMOSI(SDCARD_MOSI_PIN);
   SPI.setSCK(SDCARD_SCK_PIN);
 
@@ -114,8 +114,9 @@ void audio_setup( void ){
   if (!(SD.begin(SDCARD_CS_PIN))) {
     Serial.println("Unable to access the SD card");
     delay(1000);
-    sw_reset();
+    //sw_reset();
   }
+  
 }
 
 uint32_t FreeMem(){ // for Teensy 3.0
@@ -133,65 +134,79 @@ uint32_t FreeMem(){ // for Teensy 3.0
     // The difference is (approximately) the free, available ram.
     return stackTop - heapTop;
 }
+//
+//float avgProcUsage = 0.0f;
+//uint32_t audio_watchdog( void ){
+//  static float procUsageHistory[WATCHDOG_AUDIO_PROC_USAGE_HISTORY_LEN];
+//  float audioProcNow = AudioProcessorUsage();
+//  float accumulator = 0.0f;
+//  
+//  bool consecutive = true;
+//  uint32_t consecutive_identical = 0;
+//
+//  for(size_t idx = WATCHDOG_AUDIO_PROC_USAGE_HISTORY_LEN - 1; idx > 0; idx--){
+//    procUsageHistory[idx] = procUsageHistory[idx - 1];
+//  }
+//  procUsageHistory[0] = audioProcNow;
+//
+//  for(size_t idx = 0; idx < WATCHDOG_AUDIO_PROC_USAGE_HISTORY_LEN; idx++){
+//    float historicalUsage = procUsageHistory[idx];
+//    accumulator += historicalUsage;
+//    if(consecutive && (abs(audioProcNow - historicalUsage) < 1e-4)){
+//      consecutive_identical++;
+//    }else{
+//      consecutive = false;
+//    }
+//  }
+//  avgProcUsage = accumulator / WATCHDOG_AUDIO_PROC_USAGE_HISTORY_LEN;
+//
+//  if(avgProcUsage >= 10.0f){
+//    if(consecutive_identical >= 10){
+//      sw_reset();
+//    }
+//  }
+//
+//  if(consecutive_identical >= WATCHDOG_AUDIO_PROC_USAGE_HISTORY_LEN){
+//    sw_reset();
+//  }
+//
+//  return consecutive_identical;
+//}
 
-float avgProcUsage = 0.0f;
-uint32_t audio_watchdog( void ){
-  static float procUsageHistory[WATCHDOG_AUDIO_PROC_USAGE_HISTORY_LEN];
-  float audioProcNow = AudioProcessorUsage();
-  float accumulator = 0.0f;
+//void showPlayHead( uint8_t col ){
+//  int8_t prev_col = col - 1;
+//  if(col == 0){
+//    prev_col = (STAFF_COLS-1);
+//  }
+//
+//  CRGB rgb(0, 0, 0);
+//  setColumnRGB(rgb, prev_col);
+//  
+//  CHSV hsv((((float)col)/((float)STAFF_COLS)) * 255, 255, 255);
+//  setColumnHSV(hsv, col);
+//}
+
+
+
+void randomStaff(uint8_t col ){
   
-  bool consecutive = true;
-  uint32_t consecutive_identical = 0;
+  uint8_t row = random(STAFF_ROWS);
 
-  for(size_t idx = WATCHDOG_AUDIO_PROC_USAGE_HISTORY_LEN - 1; idx > 0; idx--){
-    procUsageHistory[idx] = procUsageHistory[idx - 1];
-  }
-  procUsageHistory[0] = audioProcNow;
-
-  for(size_t idx = 0; idx < WATCHDOG_AUDIO_PROC_USAGE_HISTORY_LEN; idx++){
-    float historicalUsage = procUsageHistory[idx];
-    accumulator += historicalUsage;
-    if(consecutive && (abs(audioProcNow - historicalUsage) < 1e-4)){
-      consecutive_identical++;
-    }else{
-      consecutive = false;
-    }
-  }
-  avgProcUsage = accumulator / WATCHDOG_AUDIO_PROC_USAGE_HISTORY_LEN;
-
-  if(avgProcUsage >= 10.0f){
-    if(consecutive_identical >= 10){
-      sw_reset();
-    }
-  }
-
-  if(consecutive_identical >= WATCHDOG_AUDIO_PROC_USAGE_HISTORY_LEN){
-    sw_reset();
-  }
-
-  return consecutive_identical;
+  staff[col][row] = random(STAFF_VALS - 1) + 1;//So that every column plays something
 }
 
-void showPlayHead( uint8_t col ){
-  int8_t prev_col = col - 1;
-  if(col == 0){
-    prev_col = (STAFF_COLS-1);
-  }
 
-  CRGB rgb(0, 0, 0);
-  setColumnRGB(rgb, prev_col);
-  
-  CHSV hsv((((float)col)/((float)STAFF_COLS)) * 255, 255, 255);
-  setColumnHSV(hsv, col);
-}
 
-void playColumn( uint8_t col ){  
+void playColumn( uint8_t col ){  //Called in conductor, which iterates col
   static uint8_t prev_players = 0;
   static uint8_t curr_players = 0;
+ 
+  randomStaff(col);
+  
+  
+//  uint32_t consecutive_identical_cpu_usage = audio_watchdog(); // try to detect and recover from cold snaps
 
-  uint32_t consecutive_identical_cpu_usage = audio_watchdog(); // try to detect and recover from cold snaps
-
-  showPlayHead(col);
+//  showPlayHead(col);
 
   AudioPlaySdWav* players = notePlayersAlpha;
   prev_players = curr_players;
@@ -210,8 +225,9 @@ void playColumn( uint8_t col ){
   DEBUG_PORT.print(col);
   DEBUG_PORT.print(", [");
 
-  for(size_t note = 0; note < STAFF_ROWS; note++){
-    staff_data_t instrument = staff[col][note];
+  for(size_t note = 0; note < STAFF_ROWS; note++){//Checks each row
+    staff_data_t instrument = staff[col][note]; //Assigns an instrument based on whats at that row and column
+    
     const char* filename = " NONE ";
     
     players[note].stop();
@@ -226,42 +242,42 @@ void playColumn( uint8_t col ){
     DEBUG_PORT.print(")");
     DEBUG_PORT.print(", ");
   }
-  DEBUG_PORT.print("] ");
-  DEBUG_PORT.print("by: ");
-  DEBUG_PORT.print((prev_players) ? "beta " : "alpha");
+  DEBUG_PORT.println("] ");
+//  DEBUG_PORT.print("by: ");
+//  DEBUG_PORT.print((prev_players) ? "beta " : "alpha");
   
 
-  DEBUG_PORT.print(" {CPU use: ");
-  float audioProcNow = AudioProcessorUsage();
-  static float prevAudioProc = 0;
-  if(audioProcNow < 100.0){
-    DEBUG_PORT.print(" ");
-  }
-  if(audioProcNow < 10){
-    DEBUG_PORT.print(" ");
-  }
-  DEBUG_PORT.print(audioProcNow, 5);
-  DEBUG_PORT.print("/");
-  float audioProcMax = AudioProcessorUsageMax();
-  if(audioProcMax < 100.0){
-    DEBUG_PORT.print(" ");
-  }
-  if(audioProcMax < 10){
-    DEBUG_PORT.print(" ");
-  }
-  DEBUG_PORT.print(audioProcMax);
-  DEBUG_PORT.print(" (");
-  DEBUG_PORT.print(avgProcUsage);
-  DEBUG_PORT.print(")");
-  DEBUG_PORT.print("    ");
-  DEBUG_PORT.print("Memory: ");
-  DEBUG_PORT.print(AudioMemoryUsage());
-  DEBUG_PORT.print("/");
-  DEBUG_PORT.print(AudioMemoryUsageMax());
-  DEBUG_PORT.print(", ci: ");
-  DEBUG_PORT.print(consecutive_identical_cpu_usage);
-  DEBUG_PORT.print("}");
-  DEBUG_PORT.println();
-
-  prevAudioProc = audioProcNow;
+//  DEBUG_PORT.print(" {CPU use: ");
+//  float audioProcNow = AudioProcessorUsage();
+//  static float prevAudioProc = 0;
+//  if(audioProcNow < 100.0){
+//    DEBUG_PORT.print(" ");
+//  }
+//  if(audioProcNow < 10){
+//    DEBUG_PORT.print(" ");
+//  }
+//  DEBUG_PORT.print(audioProcNow, 5);
+//  DEBUG_PORT.print("/");
+//  float audioProcMax = AudioProcessorUsageMax();
+//  if(audioProcMax < 100.0){
+//    DEBUG_PORT.print(" ");
+//  }
+//  if(audioProcMax < 10){
+//    DEBUG_PORT.print(" ");
+//  }
+//  DEBUG_PORT.print(audioProcMax);
+//  DEBUG_PORT.print(" (");
+////  DEBUG_PORT.print(avgProcUsage);
+//  DEBUG_PORT.print(")");
+//  DEBUG_PORT.print("    ");
+//  DEBUG_PORT.print("Memory: ");
+//  DEBUG_PORT.print(AudioMemoryUsage());
+//  DEBUG_PORT.print("/");
+//  DEBUG_PORT.print(AudioMemoryUsageMax());
+//  DEBUG_PORT.print(", ci: ");
+//  DEBUG_PORT.print(consecutive_identical_cpu_usage);
+//  DEBUG_PORT.print("}");
+//  DEBUG_PORT.println();
+//
+//  prevAudioProc = audioProcNow;
 }
