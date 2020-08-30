@@ -72,47 +72,50 @@ void setup() {
   pinMode(STATUS_LED, OUTPUT);
   digitalWrite(STATUS_LED, LOW);
 
-  staff.setDebugStream(DEBUG_PORT);
-  staff.setSize(1, STAFF_ROWS);
-  prev_staff.setSize(1, STAFF_ROWS);
-  detection_ok_staff.setSize(1, STAFF_ROWS);
+//  staff.setDebugStream(DEBUG_PORT);
+//  staff.setSize(1, STAFF_ROWS);
+//  prev_staff.setSize(1, STAFF_ROWS);
+//  detection_ok_staff.setSize(1, STAFF_ROWS);
+//
+//  memset((void*)&cart, 0x00, (sizeof(cart_t)/sizeof(uint8_t)));
+//  cart.col = preferences.getUInt(PREF_KEY_CONTROLLER_COL, CONTROLLER_COLUMN);
+//
+//  DEBUG_PORT.print("Column Controller (");
+//  DEBUG_PORT.print(cart.col);
+//  DEBUG_PORT.println(")");
 
-  memset((void*)&cart, 0x00, (sizeof(cart_t)/sizeof(uint8_t)));
-  cart.col = preferences.getUInt(PREF_KEY_CONTROLLER_COL, CONTROLLER_COLUMN);
+//  FastLED.addLeds<WS2811, DATA_PIN, RGB>(sensors.getControl(), sensors.getNumControlElements()); // have to add leds in main sketch before sensors.begin()
+//  SensorStatus_e retval = sensors.begin();
+//  DEBUG_PORT.print("sensors.begin() returned: "); DEBUG_PORT.println(retval);
 
-  DEBUG_PORT.print("Column Controller (");
-  DEBUG_PORT.print(cart.col);
-  DEBUG_PORT.println(")");
+//  WiFi.onEvent(WiFiEvent);
+//  setupClient();
+//  connectToServer();
 
-  FastLED.addLeds<WS2811, DATA_PIN, RGB>(sensors.getControl(), sensors.getNumControlElements()); // have to add leds in main sketch before sensors.begin()
-  SensorStatus_e retval = sensors.begin();
-  DEBUG_PORT.print("sensors.begin() returned: "); DEBUG_PORT.println(retval);
-
-  WiFi.onEvent(WiFiEvent);
-  setupClient();
-  connectToServer();
-
-  xTaskCreate(  updateSensors, "updateSensors", 10000, NULL, 1, NULL);
+//  xTaskCreate(  updateSensors, "updateSensors", 10000, NULL, 1, NULL);
 
   button0 = false; // don't allow button presses until setup has completed
 }
 
 void loop() {
-  if(button0){
-    button0 = false;
-    static uint32_t debounce = 0;
-    if(millis() > debounce){
-      debounce = millis() + 50;
-      cart.col++;
-      if(cart.col >= STAFF_COLS){
-        cart.col = 0;
-      }
-      setColumnNumber(cart.col);
-      for(size_t idx = 0; idx < COLUMN_LEN; idx++){
-        SensorNode* node = sensors[idx];
-        *(node) = (cart.col & (0x01 << idx)) ? CRGB(127, 127, 127) : CRGB(0, 0, 0);
-      }
-    }
-    
-  }
+//  if(button0){
+//    button0 = false;
+//    static uint32_t debounce = 0;
+//    if(millis() > debounce){
+//      debounce = millis() + 50;
+//      cart.col++;
+//      if(cart.col >= STAFF_COLS){
+//        cart.col = 0;
+//      }
+//      setColumnNumber(cart.col);
+//      for(size_t idx = 0; idx < COLUMN_LEN; idx++){
+//        SensorNode* node = sensors[idx];
+//        *(node) = (cart.col & (0x01 << idx)) ? CRGB(127, 127, 127) : CRGB(0, 0, 0);
+//      }
+//    }
+//    
+//  }
+  
+  
+  //sensors.forEachRandOrder(detectAndTransmit, &full_update);
 }

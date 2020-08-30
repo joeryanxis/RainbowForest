@@ -40,6 +40,9 @@ private:
   SFE_ISL29125* _sensor = NULL;
 
   isl_readint_t _reading;
+  uint8_t rgbR = random(255);
+  uint8_t rgbG = random(255);
+  uint8_t rgbB = random(255);
   CRGB _led = CRGB(0, 0, 0);
 
   SensorStatus_e _setLed(const CRGB& c);
@@ -91,10 +94,14 @@ public:
     if(!fn){ return _report(SENSOR_ERR_ARGS); }
 
     for(size_t idx = 0; idx < _len; idx++){
-        SensorNode* node = (*this)[idx];
+        size_t randomNumber = random(7);
+        SensorNode* node = (*this)[randomNumber];
         if(!node){ continue; }
         fn(node, idx, args);
     }
+
+    
+
     return _report(SENSOR_OK);
   }
 
