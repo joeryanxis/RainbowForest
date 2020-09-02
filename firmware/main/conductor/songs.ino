@@ -17,44 +17,24 @@ const staff_data_t N = STAFF_VAL_NONE;
 int row, col;
 
 void playSong(staff_data_t* song){
+  clearingStaff();
+  DEBUG_PORT.println("Clearing staff");
   for(size_t idx = 0; idx < SONG_ELEMENTS; idx++){
-      row = SONG_IND_TO_ROW(idx);
-      col = SONG_IND_TO_COL(idx);
+      row = SONG_IND_TO_COL(idx);
+      col = SONG_IND_TO_ROW(idx);
       staff[col][row] = song[idx];
+//      DEBUG_PORT.print("Row: ");
+//      DEBUG_PORT.print(row);
+//      DEBUG_PORT.print(" & Col: ");
+//      DEBUG_PORT.println(col);
+//      DEBUG_PORT.println(song[idx]);
     }
-    
+
   DEBUG_PORT.println("Put song into staff");
-//  static uint8_t prev_players = 0;
-//  static uint8_t curr_players = 0;
-//
-//  AudioPlaySdWav* players = notePlayersAlpha;
-//  prev_players = curr_players;
-//  if(curr_players == 0x01){
-//    players = notePlayersBeta;
-//    curr_players = 0x00;
-//  }else if(curr_players == 0x00){
-//    curr_players = 0x01;
-//  }
-//  for(size_t colIndex = 0; colIndex < STAFF_COLS; colIndex++){
-//    DEBUG_PORT.print("Iterating through Column: ");
-//    DEBUG_PORT.println(colIndex);
-//      for(size_t note = 0; note < STAFF_ROWS; note++){//Checks each row
-//        DEBUG_PORT.print("Iterating through Row: ");
-//        DEBUG_PORT.println(note);
-//        staff_data_t instrument = staff[col][note]; //Assigns an instrument based on whats at that row and column
-//        DEBUG_PORT.print("Instruments assigned: ");
-//        DEBUG_PORT.println(instrument);
-//        const char* filename = " NONE ";
-//    
-//    }
-//    players[note].stop();
-//    if(instrument != STAFF_VAL_NONE){
-//       DEBUG_PORT.println("playing a note");
-//       filename = SOUND(instrument, note);
-//       players[note].play(filename);
-//       delay(5); // A brief delay for the library read WAV info
-//       }
-//     delay(500);
+
+  playingSong = true;
+  play();
+  
 }
 
 //void show_song(staff_data_t* song){
@@ -95,38 +75,60 @@ staff_data_t clearStaff[SONG_ELEMENTS] = {
 /* 1 (D) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N,
 /* 0 (C) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, 
 };
+//
+//staff_data_t axelf[SONG_ELEMENTS] = {
+///*           0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15 */
+///* 6 (B) */  N, N, N, N, N, N, N, N, N, N, T, N, N, N, T, N,
+///* 5 (A) */  N, N, N, N, N, T, T, N, N, N, N, N, N, N, N, N,
+///* 4 (G) */  N, N, T, N, N, N, N, N, N, N, N, N, N, N, N, T,
+///* 3 (F) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N,
+///* 2 (E) */  T, N, N, N, T, N, N, N, T, N, N, N, T, N, N, N,
+///* 1 (D) */  N, N, N, N, N, N, N, T, N, N, N, N, N, N, N, N,
+///* 0 (C) */  N, N, N, N, N, N, N, N, N, N, N, N, N, T, N, N, 
+//};
 
 staff_data_t axelf[SONG_ELEMENTS] = {
 /*           0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15 */
-/* 6 (B) */  N, N, N, N, N, N, N, N, N, N, T, N, N, N, T, N,
-/* 5 (A) */  N, N, N, N, N, T, T, N, N, N, N, N, N, N, N, N,
-/* 4 (G) */  N, N, T, N, N, N, N, N, N, N, N, N, N, N, N, T,
-/* 3 (F) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N,
+/* 6 (B) */  N, N, N, N, N, N, N, N, N, N, T, N, N, T, N, N,
+/* 5 (A) */  N, N, N, N, N, T, T, N, N, N, N, N, N, N, T, N,
+/* 4 (G) */  N, N, T, N, N, N, N, N, N, N, N, N, N, N, N, N,
+/* 3 (F) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, T,
 /* 2 (E) */  T, N, N, N, T, N, N, N, T, N, N, N, T, N, N, N,
 /* 1 (D) */  N, N, N, N, N, N, N, T, N, N, N, N, N, N, N, N,
-/* 0 (C) */  N, N, N, N, N, N, N, N, N, N, N, N, N, T, N, N, 
+/* 0 (C) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, 
 };
 
 staff_data_t pokemonLevelUp[SONG_ELEMENTS] = {
 /*           0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15 */
 /* 6 (B) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N,
-/* 5 (A) */  N, N, N, N, N, N, N, N, G, G, G, N, N, N, N, N,
-/* 4 (G) */  G, N, N, N, G, G, G, N, N, N, N, N, N, G, G, G,
-/* 3 (F) */  N, G, N, G, N, N, N, N, N, N, N, N, N, N, N, N,
-/* 2 (E) */  N, N, G, N, N, N, N, N, N, N, N, N, N, N, N, N,
-/* 1 (D) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N,
+/* 5 (A) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N,
+/* 4 (G) */  N, N, N, N, N, N, N, N, G, G, G, N, N, N, N, N,
+/* 3 (F) */  G, N, N, N, G, G, G, N, N, N, N, N, G, G, G, N,
+/* 2 (E) */  N, G, N, G, N, N, N, N, N, N, N, N, N, N, N, N,
+/* 1 (D) */  N, N, G, N, N, N, N, N, N, N, N, N, N, N, N, N,
 /* 0 (C) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, 
 };
 
+//staff_data_t funkytown[SONG_ELEMENTS] = {
+///*           0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15 */
+///* 6 (B) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N,
+///* 5 (A) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N,
+///* 4 (G) */  F, F, N, F, N, N, N, N, F, N, N, F, N, N, N, N,
+///* 3 (F) */  N, N, F, N, N, N, N, N, N, N, N, N, N, N, N, N,
+///* 2 (E) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N,
+///* 1 (D) */  N, N, N, N, N, F, N, F, N, N, F, N, N, N, N, N,
+///* 0 (C) */  N, N, N, N, N, N, N, N, N, F, N, N, N, N, N, N, 
+//};
+
 staff_data_t funkytown[SONG_ELEMENTS] = {
 /*           0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15 */
-/* 6 (B) */  N, N, N, N, N, N, N, N, N, N, F, N, N, N, N, N,
-/* 5 (A) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N,
-/* 4 (G) */  F, F, N, F, N, N, N, N, F, N, N, F, N, N, N, N,
-/* 3 (F) */  N, N, F, N, N, N, N, N, N, N, N, N, N, N, N, N,
-/* 2 (E) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N,
-/* 1 (D) */  N, N, N, N, N, F, N, F, N, N, N, N, N, N, N, N,
-/* 0 (C) */  N, N, N, N, N, N, N, N, N, F, N, N, N, N, N, N, 
+/* 6 (B) */  N, N, N, N, N, N, N, N, N, F, N, N, N, N, N, N,
+/* 5 (A) */  F, F, N, F, N, N, N, N, F, N, F, N, N, N, N, N,
+/* 4 (G) */  N, N, F, N, N, N, N, N, N, N, N, N, N, N, N, N,
+/* 3 (F) */  N, N, N, N, N, N, N, N, N, N, N, F, N, N, N, N,
+/* 2 (E) */  N, N, N, N, N, F, N, F, N, N, N, N, N, N, N, N,
+/* 1 (D) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N,
+/* 0 (C) */  N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, N, 
 };
 
 staff_data_t miiShopChannel[SONG_ELEMENTS] = {

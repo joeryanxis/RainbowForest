@@ -200,8 +200,10 @@ void randomStaff(uint8_t col ){
 void playColumn( uint8_t col ){  //Called in conductor, which iterates col
   static uint8_t prev_players = 0;
   static uint8_t curr_players = 0;
- 
-  randomStaff(col);
+
+  if(!playingSong){
+    randomStaff(col);
+  }
   
   
 //  uint32_t consecutive_identical_cpu_usage = audio_watchdog(); // try to detect and recover from cold snaps

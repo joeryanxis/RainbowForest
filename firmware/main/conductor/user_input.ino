@@ -47,6 +47,9 @@ void isrButton2( void ){
   if(now >= debounce){
     debounce = (now - debounce) + debounce + 250;
     DEBUG_PORT.println("button2 (jurassic park)");
+    if(playbackRunning){
+      pause();
+    }
     playSong(jurassicPark);
   }
 }
@@ -57,6 +60,9 @@ void isrButton3( void ){
   if(now >= debounce){
     debounce = (now - debounce) + debounce + 250;
     DEBUG_PORT.println("button3 (pokemonLevelUp)");
+    if(playbackRunning){
+      pause();
+    }
     playSong(pokemonLevelUp);
   }
 }
@@ -67,6 +73,9 @@ void isrButton4( void ){
   if(now >= debounce){
     debounce = (now - debounce) + debounce + 250;
     DEBUG_PORT.println("button4 (funkytown)");
+    if(playbackRunning){
+      pause();
+    }
     playSong(funkytown);
   } 
 }
@@ -75,14 +84,18 @@ void isrButton5( void ){
   static uint32_t debounce = 0;
   uint32_t now = millis();
   if(now >= debounce){
-    debounce = (now - debounce) + debounce + 250;
+    debounce = (now - debounce) + debounce + 450;
     DEBUG_PORT.println("button5 (miiShopChannel)");
+    if(playbackRunning){
+      pause();
+    }
     playSong(miiShopChannel);
+    
   }
 }
 
 void isrButton6( void ){  // play / pause
-  static uint8_t timeToReset;
+
   static uint32_t debounce = 0;
   uint32_t now = millis();
   if(now >= debounce){
@@ -91,10 +104,6 @@ void isrButton6( void ){  // play / pause
 
     if(playbackRunning){
       pause();
-      timeToReset += 1;
-      if(timeToReset == 10){
-        sw_reset();
-      }
       clearingStaff();
     }else{    
       play();

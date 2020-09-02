@@ -64,6 +64,11 @@ void clearingStaff(){
       staff[i][j] = 0;
     }
   }
+  timeToReset += 1;
+  if(timeToReset == 10){
+        timeToReset = 0;
+        sw_reset();
+      }
 }
 
 //void onCartReception(cart_t* cart, void* args){

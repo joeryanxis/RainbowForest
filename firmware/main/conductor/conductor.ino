@@ -30,7 +30,7 @@ Staff <staff_data_t> staff;
 #define MAX_BPM (160)
 #define MIN_BPM (60)
 #define STEP_BPM (4)
-#define DEF_BPM (80)
+#define DEF_BPM (110)
 #define BPM2USPERIOD(B) (60000000/(B))
 
 #define EXAMPLE1_PIN (2)
@@ -47,6 +47,9 @@ volatile uint8_t playbackColumn = 0;
 
 volatile uint8_t timesPlayed = 0;
 
+uint8_t timeToReset = 0;
+
+bool playingSong = false;
 
 uint32_t rest = (REST_INACTIVE_SEC * 1000);
 bool playButtonIllumination = true;
@@ -105,10 +108,16 @@ void loop() {
       if(playbackColumn >= STAFF_COLS){
         playbackColumn = 0;
         timesPlayed += 1;
+        if(playingSong){
+          playingSong = false;
+          clearingStaff();
+          pause();
+        }
       }
       if(timesPlayed == 3){
         timesPlayed = 0;
         pause();
+        clearingStaff();
         DEBUG_PORT.println("Timed Out");
       }
       
