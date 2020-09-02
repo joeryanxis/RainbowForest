@@ -45,6 +45,9 @@ volatile bool playNext = true;
 volatile bool playbackRunning = false;
 volatile uint8_t playbackColumn = 0;
 
+volatile uint8_t timesPlayed = 0;
+
+
 uint32_t rest = (REST_INACTIVE_SEC * 1000);
 bool playButtonIllumination = true;
 
@@ -101,7 +104,14 @@ void loop() {
       playColumn(playbackColumn++);
       if(playbackColumn >= STAFF_COLS){
         playbackColumn = 0;
+        timesPlayed += 1;
       }
+      if(timesPlayed == 3){
+        timesPlayed = 0;
+        pause();
+        DEBUG_PORT.println("Timed Out");
+      }
+      
     }
   }
 }
